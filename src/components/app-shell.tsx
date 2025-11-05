@@ -29,28 +29,28 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { NewTradeDialog } from './new-trade-dialog';
 import type { Trade } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { useTrades } from '@/context/trades-context';
 
 const menuItems = [
-  { href: '/ai-insights', label: 'AI Аналитика', icon: Bot, description: "Находите закономерности с помощью ИИ." },
-  { href: '/analytics', label: 'Аналитика', icon: BarChart, description: "Глубокий анализ вашей производительности." },
-  { href: '/settings', label: 'Настройки', icon: Settings, description: "Настройте свой журнал." },
-  { href: '/trades', label: 'Сделки', icon: Wallet, description: "Записывайте и просматривайте все свои сделки." },
   { href: '/', label: 'Панель', icon: LayoutDashboard, description: "Ваш центр управления торговлей." },
+  { href: '/trades', label: 'Сделки', icon: Wallet, description: "Записывайте и просматривайте все свои сделки." },
+  { href: '/analytics', label: 'Аналитика', icon: BarChart, description: "Глубокий анализ вашей производительности." },
+  { href: '/ai-insights', label: 'AI Аналитика', icon: Bot, description: "Находите закономерности с помощью ИИ." },
+  { href: '/settings', label: 'Настройки', icon: Settings, description: "Настройте свой журнал." },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { toast } = useToast();
+  const { addTrade } = useTrades();
   
-  const sortedMenuItems = [...menuItems].sort((a, b) => b.href.length - a.href.length);
-  const currentPage = sortedMenuItems.find(item => pathname.startsWith(item.href)) || menuItems.find(i => i.href === '/');
+  const currentPage = menuItems.find(item => pathname === item.href) || menuItems[0];
 
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const [isNewTradeOpen, setIsNewTradeOpen] = useState(false);
 
   const handleAddTrade = (trade: Trade) => {
-    // В реальном приложении здесь будет вызов API для сохранения
-    console.log('Новая сделка добавлена:', trade);
+    addTrade(trade);
     toast({
       title: 'Сделка добавлена',
       description: `Сделка для ${trade.instrument} была успешно добавлена.`,
@@ -68,7 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            {menuItems.sort((a,b) => a.href.length - b.href.length).map((item) => (
+            {menuItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild

@@ -9,7 +9,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { mockTrades } from '@/lib/data';
 import type { Trade } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -39,6 +38,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { NewTradeDialog } from '@/components/new-trade-dialog';
 import Image from 'next/image';
+import { useTrades } from '@/context/trades-context';
 
 // Компонент для форматирования даты на стороне клиента, чтобы избежать ошибок гидратации
 function ClientFormattedDate({ dateString }: { dateString: string | null }) {
@@ -56,7 +56,7 @@ function ClientFormattedDate({ dateString }: { dateString: string | null }) {
 }
 
 export default function TradesPage() {
-  const [trades, setTrades] = useState<Trade[]>(mockTrades);
+  const { trades, addTrade, deleteTrade } = useTrades();
   const [tradeToDelete, setTradeToDelete] = useState<Trade | null>(null);
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
@@ -67,16 +67,16 @@ export default function TradesPage() {
   }, []);
 
   const handleAddTrade = (trade: Trade) => {
-    setTrades((prevTrades) => [trade, ...prevTrades]);
+    addTrade(trade);
     toast({
       title: 'Сделка добавлена',
       description: `Сделка для ${trade.instrument} была успешно добавлена.`,
     });
   };
 
-  const handleDelete = () => {
+  const handleDeleteConfirm = () => {
     if (tradeToDelete) {
-      setTrades(trades.filter((trade) => trade.id !== tradeToDelete.id));
+      deleteTrade(tradeToDelete.id);
       toast({
         title: 'Сделка удалена',
         description: `Сделка для ${tradeToDelete.instrument} была успешно удалена.`,
@@ -224,7 +224,7 @@ export default function TradesPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Отмена</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleDelete}>
+                          <AlertDialogAction onClick={handleDeleteConfirm}>
                             Удалить
                           </AlertDialogAction>
                         </AlertDialogFooter>

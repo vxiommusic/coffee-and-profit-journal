@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AppShell } from '@/components/app-shell';
 import { Toaster } from '@/components/ui/toaster';
+import { TradesProvider } from '@/context/trades-context';
 
 export const metadata: Metadata = {
   title: 'Журнал NovaTrade',
@@ -28,7 +29,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <AppShell>{children}</AppShell>
+        <TradesProvider>
+          <AppShell>{children}</AppShell>
+        </TradesProvider>
         <Toaster />
       </body>
     </html>

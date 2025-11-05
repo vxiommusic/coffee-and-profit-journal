@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -14,13 +16,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { mockTrades } from '@/lib/data';
 import type { Trade } from '@/lib/types';
 import { ArrowDownRight, ArrowUpRight, Bot } from 'lucide-react';
 import PortfolioChart from '@/components/portfolio-chart';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import Link from 'next/link';
+import { useTrades } from '@/context/trades-context';
 
 function calculateStats(trades: Trade[]) {
   const closedTrades = trades.filter((t) => t.pnl !== null) as (Trade & {pnl: number})[];
@@ -84,8 +86,9 @@ function StatsCard({
 }
 
 export default function DashboardPage() {
-  const stats = calculateStats(mockTrades);
-  const recentTrades = mockTrades.slice(0, 3);
+  const { trades } = useTrades();
+  const stats = calculateStats(trades);
+  const recentTrades = trades.slice(0, 3);
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in-0">
