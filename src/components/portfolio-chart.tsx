@@ -1,6 +1,6 @@
 "use client"
 
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, Bar } from 'recharts';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, Bar, Cell } from 'recharts';
 import { ChartContainer, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import type { Trade } from '@/lib/types';
 import { format } from 'date-fns';
@@ -74,7 +74,7 @@ export default function PortfolioChart({ trades }: { trades: Trade[] }) {
             />
             <Bar dataKey="pnl" radius={4}>
               {chartData.map((entry, index) => (
-                  <Bar 
+                  <Cell 
                     key={`cell-${index}`} 
                     fill={entry.pnl >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--destructive))'} 
                     />
