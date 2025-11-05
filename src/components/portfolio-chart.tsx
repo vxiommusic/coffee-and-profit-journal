@@ -62,7 +62,7 @@ export default function PortfolioChart({ trades }: { trades: Trade[] }) {
               content={<ChartTooltipContent 
                   formatter={(value, name, item) => (
                     <div className="flex flex-col">
-                       <span className={`font-bold ${item.payload.pnl > 0 ? 'text-chart-2' : 'text-chart-5'}`}>
+                       <span className={`font-bold ${item.payload.pnl >= 0 ? 'text-primary' : 'text-destructive'}`}>
                          {`$${Number(value).toLocaleString()}`}
                        </span>
                     </div>
@@ -76,7 +76,7 @@ export default function PortfolioChart({ trades }: { trades: Trade[] }) {
               {chartData.map((entry, index) => (
                   <Bar 
                     key={`cell-${index}`} 
-                    fill={entry.pnl > 0 ? 'hsl(var(--chart-2))' : 'hsl(var(--chart-5))'} 
+                    fill={entry.pnl >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--destructive))'} 
                     />
               ))}
             </Bar>

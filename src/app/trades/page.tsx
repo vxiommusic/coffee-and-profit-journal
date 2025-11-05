@@ -167,8 +167,8 @@ export default function TradesPage() {
                       variant="outline"
                       className={
                         trade.type === 'Long'
-                          ? 'text-chart-2 border-chart-2'
-                          : 'text-chart-5 border-chart-5'
+                          ? 'text-primary border-primary'
+                          : 'text-destructive border-destructive'
                       }
                     >
                       {trade.type === 'Long' ? 'Длинная' : 'Короткая'}
@@ -193,11 +193,9 @@ export default function TradesPage() {
                   </TableCell>
                   <TableCell
                     className={`text-right font-mono ${
-                      trade.pnl !== null && trade.pnl > 0
-                        ? 'text-chart-2'
-                        : trade.pnl !== null && trade.pnl < 0
-                        ? 'text-chart-5'
-                        : 'text-foreground'
+                      trade.pnl !== null && trade.pnl >= 0
+                        ? 'text-primary'
+                        : 'text-destructive'
                     }`}
                   >
                     {trade.pnl !== null

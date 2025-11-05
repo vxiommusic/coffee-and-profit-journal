@@ -69,7 +69,7 @@ function StatsCard({
         {change && (
           <p
             className={`text-xs mt-1 flex items-center ${
-              isPositive ? 'text-chart-2' : 'text-chart-5'
+              isPositive ? 'text-primary' : 'text-destructive'
             }`}
           >
             {isPositive ? (
@@ -160,8 +160,8 @@ export default function DashboardPage() {
                       variant="outline"
                       className={
                         trade.type === 'Long'
-                          ? 'text-chart-2 border-chart-2'
-                          : 'text-chart-5 border-chart-5'
+                          ? 'text-primary border-primary'
+                          : 'text-destructive border-destructive'
                       }
                     >
                       {trade.type === 'Long' ? 'Длинная' : 'Короткая'}
@@ -169,11 +169,9 @@ export default function DashboardPage() {
                   </TableCell>
                   <TableCell
                     className={`text-right font-mono ${
-                      trade.pnl !== null && trade.pnl > 0
-                        ? 'text-chart-2'
-                        : trade.pnl !== null && trade.pnl < 0
-                        ? 'text-chart-5'
-                        : ''
+                      trade.pnl !== null && trade.pnl >= 0
+                        ? 'text-primary'
+                        : 'text-destructive'
                     }`}
                   >
                     {trade.pnl !== null
