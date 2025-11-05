@@ -28,6 +28,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { NewTradeDialog } from '@/components/new-trade-dialog';
 import Image from 'next/image';
@@ -120,13 +127,33 @@ export default function TradesPage() {
                   </TableCell>
                   <TableCell>
                     {trade.chartImageUrl && (
-                       <Image
-                        src={trade.chartImageUrl}
-                        alt={`График для ${trade.instrument}`}
-                        width={100}
-                        height={60}
-                        className="rounded-md object-cover"
-                      />
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button>
+                            <Image
+                              src={trade.chartImageUrl}
+                              alt={`График для ${trade.instrument}`}
+                              width={100}
+                              height={60}
+                              className="rounded-md object-cover cursor-pointer"
+                            />
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                          <DialogHeader>
+                            <DialogTitle>График: {trade.instrument}</DialogTitle>
+                          </DialogHeader>
+                          <div className="mt-4">
+                            <Image
+                              src={trade.chartImageUrl}
+                              alt={`График для ${trade.instrument}`}
+                              width={1200}
+                              height={800}
+                              className="rounded-lg w-full h-auto"
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     )}
                   </TableCell>
                   <TableCell>
