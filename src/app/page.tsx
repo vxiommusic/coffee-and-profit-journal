@@ -23,7 +23,7 @@ import { ru } from 'date-fns/locale';
 import Link from 'next/link';
 
 function calculateStats(trades: Trade[]) {
-  const closedTrades = trades.filter((t) => t.status === 'Closed');
+  const closedTrades = trades.filter((t) => t.pnl !== null) as (Trade & {pnl: number})[];
   const totalPnl = closedTrades.reduce((sum, t) => sum + t.pnl, 0);
   const winningTrades = closedTrades.filter((t) => t.pnl > 0).length;
   const winRate =
@@ -142,7 +142,6 @@ export default function DashboardPage() {
                 <TableHead>Тип</TableHead>
                 <TableHead className="text-right">P/L</TableHead>
                 <TableHead>Дата</TableHead>
-                <TableHead>Статус</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -167,33 +166,19 @@ export default function DashboardPage() {
                   </TableCell>
                   <TableCell
                     className={`text-right font-mono ${
-                      trade.pnl > 0
+                      trade.pnl !== null && trade.pnl > 0
                         ? 'text-chart-2'
-                        : trade.pnl < 0
+                        : trade.pnl !== null && trade.pnl < 0
                         ? 'text-chart-5'
                         : ''
                     }`}
                   >
-                    {trade.status === 'Closed'
+                    {trade.pnl !== null
                       ? `${trade.pnl >= 0 ? '+' : ''}$${trade.pnl.toFixed(2)}`
                       : '-'}
                   </TableCell>
                   <TableCell>
                     {format(parseISO(trade.entryDate), 'd MMM, yyyy', { locale: ru })}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        trade.status === 'Open' ? 'outline' : 'secondary'
-                      }
-                      className={
-                        trade.status === 'Open'
-                          ? 'border-primary text-primary animate-pulse'
-                          : ''
-                      }
-                    >
-                      {trade.status === 'Open' ? 'Открыта' : 'Закрыта'}
-                    </Badge>
                   </TableCell>
                 </TableRow>
               ))}

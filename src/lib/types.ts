@@ -3,12 +3,11 @@ export type Trade = {
   instrument: string;
   type: 'Long' | 'Short';
   entryPrice: number;
-  exitPrice: number;
+  exitPrice: number | null;
   size: number;
   entryDate: string;
-  exitDate: string;
-  status: 'Open' | 'Closed';
-  pnl: number;
+  exitDate: string | null;
+  pnl: number | null;
   notes?: string;
   chartImageId: string;
 };

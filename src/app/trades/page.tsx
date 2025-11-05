@@ -31,11 +31,15 @@ import {
 import { useToast } from '@/hooks/use-toast';
 
 // Компонент для форматирования даты на стороне клиента, чтобы избежать ошибок гидратации
-function ClientFormattedDate({ dateString }: { dateString: string }) {
+function ClientFormattedDate({ dateString }: { dateString: string | null }) {
   const [formattedDate, setFormattedDate] = useState('');
 
   useEffect(() => {
-    setFormattedDate(format(parseISO(dateString), 'PPpp', { locale: ru }));
+    if (dateString) {
+      setFormattedDate(format(parseISO(dateString), 'PPpp', { locale: ru }));
+    } else {
+      setFormattedDate('-');
+    }
   }, [dateString]);
 
   return <>{formattedDate}</>;
@@ -88,7 +92,6 @@ export default function TradesPage() {
                 <TableHead>Цена выхода</TableHead>
                 <TableHead>Размер</TableHead>
                 <TableHead>Дата входа</TableHead>
-                <TableHead>Статус</TableHead>
                 <TableHead className="text-right">P/L</TableHead>
                 <TableHead className="text-right">Действия</TableHead>
               </TableRow>
@@ -115,7 +118,7 @@ export default function TradesPage() {
                     ${trade.entryPrice.toLocaleString('ru-RU')}
                   </TableCell>
                   <TableCell className="font-mono">
-                    {trade.status === 'Closed'
+                    {trade.exitPrice !== null
                       ? `$${trade.exitPrice.toLocaleString('ru-RU')}`
                       : '-'}
                   </TableCell>
@@ -123,28 +126,16 @@ export default function TradesPage() {
                   <TableCell>
                     {isClient ? <ClientFormattedDate dateString={trade.entryDate} /> : null}
                   </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={trade.status === 'Open' ? 'outline' : 'secondary'}
-                      className={
-                        trade.status === 'Open'
-                          ? 'border-primary text-primary animate-pulse'
-                          : ''
-                      }
-                    >
-                      {trade.status === 'Open' ? 'Открыта' : 'Закрыта'}
-                    </Badge>
-                  </TableCell>
                   <TableCell
                     className={`text-right font-mono ${
-                      trade.pnl > 0
+                      trade.pnl !== null && trade.pnl > 0
                         ? 'text-chart-2'
-                        : trade.pnl < 0
+                        : trade.pnl !== null && trade.pnl < 0
                         ? 'text-chart-5'
                         : 'text-foreground'
                     }`}
                   >
-                    {trade.status === 'Closed'
+                    {trade.pnl !== null
                       ? `${trade.pnl >= 0 ? '+' : ''}$${trade.pnl.toFixed(2)}`
                       : '-'}
                   </TableCell>
