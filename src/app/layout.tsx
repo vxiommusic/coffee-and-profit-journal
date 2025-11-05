@@ -6,7 +6,7 @@ import { TradesProvider } from '@/context/trades-context';
 import { NotesProvider } from '@/context/notes-context';
 
 export const metadata: Metadata = {
-  title: 'Журнал Coffee&Profit',
+  title: 'Coffee&Profit',
   description: 'Футуристический торговый журнал для анализа и улучшения ваших результатов.',
 };
 
