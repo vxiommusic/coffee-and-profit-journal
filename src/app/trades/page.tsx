@@ -96,11 +96,11 @@ export default function TradesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="font-mono">
-                    ${trade.entryPrice.toLocaleString()}
+                    ${trade.entryPrice.toLocaleString('ru-RU')}
                   </TableCell>
                   <TableCell className="font-mono">
                     {trade.status === 'Closed'
-                      ? `$${trade.exitPrice.toLocaleString()}`
+                      ? `$${trade.exitPrice.toLocaleString('ru-RU')}`
                       : '-'}
                   </TableCell>
                   <TableCell className="font-mono">{trade.size}</TableCell>
