@@ -61,7 +61,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <SidebarHeader className="p-4">
           <Link href="/" className="flex items-center gap-2">
             <Flame className="w-8 h-8 text-primary" />
-            <h1 className="text-xl font-headline font-semibold">Coffee&Profit</h1>
+            <h1 className="text-xl font-headline font-semibold">Coffee and Profit</h1>
           </Link>
         </SidebarHeader>
         <SidebarContent>
