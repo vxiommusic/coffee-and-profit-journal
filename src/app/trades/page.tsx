@@ -116,6 +116,7 @@ export default function TradesPage() {
                 <TableHead>Цена выхода</TableHead>
                 <TableHead>Размер</TableHead>
                 <TableHead>Дата входа</TableHead>
+                <TableHead>Комиссия</TableHead>
                 <TableHead className="text-right">P/L</TableHead>
                 <TableHead className="text-right">Действия</TableHead>
               </TableRow>
@@ -184,6 +185,11 @@ export default function TradesPage() {
                   <TableCell className="font-mono">{trade.size}</TableCell>
                   <TableCell>
                     {isClient ? <ClientFormattedDate dateString={trade.entryDate} /> : null}
+                  </TableCell>
+                  <TableCell className="font-mono">
+                    {trade.commission !== null && trade.commission !== undefined
+                      ? `$${trade.commission.toLocaleString('ru-RU', { minimumFractionDigits: 2 })}`
+                      : '-'}
                   </TableCell>
                   <TableCell
                     className={`text-right font-mono ${

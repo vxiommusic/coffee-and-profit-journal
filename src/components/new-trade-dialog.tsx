@@ -40,6 +40,7 @@ const tradeSchema = z.object({
   entryPrice: z.coerce.number().positive('Цена входа должна быть положительной'),
   exitPrice: z.coerce.number().positive('Цена выхода должна быть положительной').optional().or(z.literal('')),
   size: z.coerce.number().positive('Размер должен быть положительным'),
+  commission: z.coerce.number().min(0, 'Комиссия не может быть отрицательной').optional().or(z.literal('')),
   entryDate: z.string().min(1, 'Дата входа обязательна'),
   exitDate: z.string().optional(),
   notes: z.string().optional(),
@@ -65,6 +66,7 @@ export function NewTradeDialog({
       entryPrice: undefined,
       exitPrice: undefined,
       size: undefined,
+      commission: undefined,
       entryDate: new Date().toISOString().slice(0, 16),
       exitDate: '',
       notes: '',
@@ -87,6 +89,17 @@ export function NewTradeDialog({
 
 
   function onSubmit(values: z.infer<typeof tradeSchema>) {
+    const commission = values.commission ? Number(values.commission) : 0;
+    let pnl: number | null = null;
+
+    if (values.exitPrice && values.entryPrice) {
+      pnl =
+        (Number(values.exitPrice) - values.entryPrice) *
+        values.size *
+        (values.type === 'Long' ? 1 : -1) - commission;
+    }
+
+
     const newTrade: Trade = {
       id: uuidv4(),
       instrument: values.instrument,
@@ -94,16 +107,12 @@ export function NewTradeDialog({
       entryPrice: values.entryPrice,
       exitPrice: values.exitPrice ? Number(values.exitPrice) : null,
       size: values.size,
+      commission: commission,
       entryDate: new Date(values.entryDate).toISOString(),
       exitDate: values.exitDate ? new Date(values.exitDate).toISOString() : null,
       notes: values.notes,
       chartImageUrl: values.chartImageUrl || null,
-      pnl:
-        values.exitPrice && values.entryPrice
-          ? (Number(values.exitPrice) - values.entryPrice) *
-            values.size *
-            (values.type === 'Long' ? 1 : -1)
-          : null,
+      pnl: pnl,
     };
     onAddTrade(newTrade);
     onOpenChange(false);
@@ -194,6 +203,19 @@ export function NewTradeDialog({
                 </FormItem>
               )}
             />
+             <FormField
+              control={form.control}
+              name="commission"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Комиссия ($)</FormLabel>
+                  <FormControl>
+                    <Input type="number" step="any" placeholder="0.00" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="entryDate"
@@ -220,11 +242,11 @@ export function NewTradeDialog({
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               control={form.control}
               name="chartImageUrl"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="col-span-2">
                   <FormLabel>Скриншот графика</FormLabel>
                    <FormControl>
                     <div>

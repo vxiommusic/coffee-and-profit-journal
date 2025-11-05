@@ -10,4 +10,5 @@ export type Trade = {
   pnl: number | null;
   notes?: string;
   chartImageUrl: string | null;
+  commission?: number | null;
 };
