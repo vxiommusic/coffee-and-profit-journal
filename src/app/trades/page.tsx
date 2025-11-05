@@ -16,7 +16,7 @@ import { ru } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Filter, Trash2, Upload } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,10 +30,26 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 
+// Компонент для форматирования даты на стороне клиента, чтобы избежать ошибок гидратации
+function ClientFormattedDate({ dateString }: { dateString: string }) {
+  const [formattedDate, setFormattedDate] = useState('');
+
+  useEffect(() => {
+    setFormattedDate(format(parseISO(dateString), 'PPpp', { locale: ru }));
+  }, [dateString]);
+
+  return <>{formattedDate}</>;
+}
+
 export default function TradesPage() {
   const [trades, setTrades] = useState<Trade[]>(mockTrades);
   const [tradeToDelete, setTradeToDelete] = useState<Trade | null>(null);
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleDelete = () => {
     if (tradeToDelete) {
@@ -105,7 +121,7 @@ export default function TradesPage() {
                   </TableCell>
                   <TableCell className="font-mono">{trade.size}</TableCell>
                   <TableCell>
-                    {format(parseISO(trade.entryDate), 'PPpp', { locale: ru })}
+                    {isClient ? <ClientFormattedDate dateString={trade.entryDate} /> : null}
                   </TableCell>
                   <TableCell>
                     <Badge
