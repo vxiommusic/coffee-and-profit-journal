@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import type { Trade } from '@/lib/types';
-import { ArrowDownRight, ArrowUpRight, Bot } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import PortfolioChart from '@/components/portfolio-chart';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -118,21 +118,7 @@ export default function DashboardPage() {
         title="Сред. прибыль / убыток"
         value={`$${stats.avgProfit.toFixed(2)} / $${Math.abs(stats.avgLoss).toFixed(2)}`}
       />
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline">
-            <Bot className="text-primary" />
-            AI Аналитика
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Анализ ИИ выявил повторяющийся паттерн "бычий вымпел" в ваших выигрышных сделках по NVDA. Рассмотрите возможность поиска этой формации.
-          </p>
-        </CardContent>
-      </Card>
-
+      
       <Card className="lg:col-span-4">
         <CardHeader>
           <CardTitle className="font-headline">Последние сделки</CardTitle>

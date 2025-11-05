@@ -20,7 +20,6 @@ import {
   Wallet,
   BarChart,
   Settings,
-  Bot,
   Flame,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -35,7 +34,6 @@ const menuItems = [
   { href: '/', label: 'Панель', icon: LayoutDashboard, description: "Ваш центр управления торговлей." },
   { href: '/trades', label: 'Сделки', icon: Wallet, description: "Записывайте и просматривайте все свои сделки." },
   { href: '/analytics', label: 'Аналитика', icon: BarChart, description: "Глубокий анализ вашей производительности." },
-  { href: '/ai-insights', label: 'AI Аналитика', icon: Bot, description: "Находите закономерности с помощью ИИ." },
   { href: '/settings', label: 'Настройки', icon: Settings, description: "Настройте свой журнал." },
 ];
 
