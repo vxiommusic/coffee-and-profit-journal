@@ -28,11 +28,11 @@ import { Button } from '@/components/ui/button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const menuItems = [
-  { href: '/ai-insights', label: 'AI Insights', icon: Bot, description: "Uncover patterns with AI." },
-  { href: '/analytics', label: 'Analytics', icon: BarChart, description: "Deep dive into your performance." },
-  { href: '/settings', label: 'Settings', icon: Settings, description: "Customize your journal." },
-  { href: '/trades', label: 'Trades', icon: Wallet, description: "Log and review all your trades." },
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard, description: "Your mission control for trading." },
+  { href: '/ai-insights', label: 'AI Аналитика', icon: Bot, description: "Находите закономерности с помощью ИИ." },
+  { href: '/analytics', label: 'Аналитика', icon: BarChart, description: "Глубокий анализ вашей производительности." },
+  { href: '/settings', label: 'Настройки', icon: Settings, description: "Настройте свой журнал." },
+  { href: '/trades', label: 'Сделки', icon: Wallet, description: "Записывайте и просматривайте все свои сделки." },
+  { href: '/', label: 'Панель', icon: LayoutDashboard, description: "Ваш центр управления торговлей." },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -73,12 +73,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <SidebarFooter className="p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={userAvatar?.imageUrl} data-ai-hint={userAvatar?.imageHint} alt="User avatar" />
-              <AvatarFallback>TJ</AvatarFallback>
+              <AvatarImage src={userAvatar?.imageUrl} data-ai-hint={userAvatar?.imageHint} alt="Аватар пользователя" />
+              <AvatarFallback>ТД</AvatarFallback>
             </Avatar>
             <div className="flex flex-col overflow-hidden">
-              <span className="font-semibold text-sm truncate">Trader Joe</span>
-              <span className="text-xs text-muted-foreground">Pro Plan</span>
+              <span className="font-semibold text-sm truncate">Трейдер Джо</span>
+              <span className="text-xs text-muted-foreground">Pro План</span>
             </div>
           </div>
         </SidebarFooter>
@@ -96,7 +96,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <p className="text-muted-foreground text-sm hidden md:block">{currentPage?.description}</p>
                 </div>
             </div>
-            <Button>New Trade</Button>
+            <Button>Новая сделка</Button>
         </header>
         <div className="p-4 sm:p-6 lg:p-8">
           {children}

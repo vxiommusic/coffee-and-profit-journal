@@ -7,14 +7,14 @@ export default function AiInsightsPage() {
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2">
                     <Bot className="text-primary"/>
-                    AI-Powered Insights
+                    Аналитика на базе ИИ
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col items-center justify-center text-center h-96 border-2 border-dashed rounded-lg">
-                    <h2 className="text-2xl font-bold tracking-tight">AI Analysis in Progress</h2>
+                    <h2 className="text-2xl font-bold tracking-tight">ИИ-анализ в процессе</h2>
                     <p className="text-muted-foreground max-w-md">
-                        Our AI is scanning your trades for recurring patterns, optimal entry/exit points, and risk factors. Check back soon for actionable insights.
+                        Наш ИИ сканирует ваши сделки на предмет повторяющихся паттернов, оптимальных точек входа/выхода и факторов риска. Загляните позже за полезными идеями.
                     </p>
                 </div>
             </CardContent>

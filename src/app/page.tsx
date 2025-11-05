@@ -19,6 +19,7 @@ import type { Trade } from '@/lib/types';
 import { ArrowDownRight, ArrowUpRight, Bot } from 'lucide-react';
 import PortfolioChart from '@/components/portfolio-chart';
 import { format, parseISO } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import Link from 'next/link';
 
 function calculateStats(trades: Trade[]) {
@@ -74,7 +75,7 @@ function StatsCard({
             ) : (
               <ArrowDownRight className="h-4 w-4" />
             )}
-            {change} vs last month
+            {change} по сравнению с прошлым месяцем
           </p>
         )}
       </CardContent>
@@ -90,9 +91,9 @@ export default function DashboardPage() {
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in-0">
       <Card className="lg:col-span-4">
         <CardHeader>
-          <CardTitle className="font-headline">Portfolio Performance</CardTitle>
+          <CardTitle className="font-headline">Эффективность портфеля</CardTitle>
           <CardDescription>
-            Your trading performance over the last 30 days.
+            Ваши торговые показатели за последние 30 дней.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -101,17 +102,17 @@ export default function DashboardPage() {
       </Card>
 
       <StatsCard
-        title="Total P/L"
+        title="Общий P/L"
         value={`$${stats.totalPnl.toFixed(2)}`}
         change="+12.5%"
       />
       <StatsCard
-        title="Win Rate"
+        title="Процент побед"
         value={`${stats.winRate.toFixed(1)}%`}
         change="-1.2%"
       />
       <StatsCard
-        title="Avg. Profit / Loss"
+        title="Сред. прибыль / убыток"
         value={`$${stats.avgProfit.toFixed(2)} / $${Math.abs(stats.avgLoss).toFixed(2)}`}
       />
 
@@ -119,30 +120,29 @@ export default function DashboardPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-headline">
             <Bot className="text-primary" />
-            AI Insights
+            AI Аналитика
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            AI analysis identified a recurring bullish pennant pattern in your
-            winning NVDA trades. Consider looking for this setup.
+            Анализ ИИ выявил повторяющийся паттерн "бычий вымпел" в ваших выигрышных сделках по NVDA. Рассмотрите возможность поиска этой формации.
           </p>
         </CardContent>
       </Card>
 
       <Card className="lg:col-span-4">
         <CardHeader>
-          <CardTitle className="font-headline">Recent Trades</CardTitle>
+          <CardTitle className="font-headline">Последние сделки</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Instrument</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>Инструмент</TableHead>
+                <TableHead>Тип</TableHead>
                 <TableHead className="text-right">P/L</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Дата</TableHead>
+                <TableHead>Статус</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
                           : 'text-chart-5 border-chart-5'
                       }
                     >
-                      {trade.type}
+                      {trade.type === 'Long' ? 'Длинная' : 'Короткая'}
                     </Badge>
                   </TableCell>
                   <TableCell
@@ -179,7 +179,7 @@ export default function DashboardPage() {
                       : '-'}
                   </TableCell>
                   <TableCell>
-                    {format(parseISO(trade.entryDate), 'MMM d, yyyy')}
+                    {format(parseISO(trade.entryDate), 'd MMM, yyyy', { locale: ru })}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -192,7 +192,7 @@ export default function DashboardPage() {
                           : ''
                       }
                     >
-                      {trade.status}
+                      {trade.status === 'Open' ? 'Открыта' : 'Закрыта'}
                     </Badge>
                   </TableCell>
                 </TableRow>

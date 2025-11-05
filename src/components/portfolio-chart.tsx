@@ -2,6 +2,7 @@
 
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
+import { ru } from 'date-fns/locale';
 
 const chartData = [
   { date: '2024-04-25', value: 10000 },
@@ -19,7 +20,7 @@ const chartData = [
 
 const chartConfig = {
   value: {
-    label: 'Portfolio Value',
+    label: 'Стоимость портфеля',
     color: 'hsl(var(--primary))',
   },
 } satisfies ChartConfig
@@ -42,7 +43,7 @@ export default function PortfolioChart() {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              tickFormatter={(value) => new Date(value).toLocaleDateString('ru-RU', { month: 'short', day: 'numeric' })}
               stroke="hsl(var(--muted-foreground))"
             />
             <YAxis 

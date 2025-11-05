@@ -12,7 +12,7 @@ export const mockTrades: Trade[] = [
     exitDate: '2024-05-20T14:00:00Z',
     status: 'Closed',
     pnl: 502.5,
-    notes: 'Caught the morning surge on AI news. Good execution.',
+    notes: 'Поймал утренний всплеск на новостях об ИИ. Хорошее исполнение.',
     chartImageId: 'chart-1',
   },
   {
@@ -26,7 +26,7 @@ export const mockTrades: Trade[] = [
     exitDate: '2024-05-21T18:45:00Z',
     status: 'Closed',
     pnl: 650,
-    notes: 'Faded the resistance level at 69k. Worked out as planned.',
+    notes: 'Продажа от уровня сопротивления 69k. Сработало как и планировалось.',
     chartImageId: 'chart-2',
   },
   {
@@ -40,7 +40,7 @@ export const mockTrades: Trade[] = [
     exitDate: '2024-05-22T10:15:00Z',
     status: 'Closed',
     pnl: -100,
-    notes: 'Jumped in too early, got stopped out on a wick.',
+    notes: 'Вошел слишком рано, выбило по стопу на фитиле.',
     chartImageId: 'chart-3',
   },
   {
@@ -54,7 +54,7 @@ export const mockTrades: Trade[] = [
     exitDate: '',
     status: 'Open',
     pnl: 0,
-    notes: 'Entering based on strong support and bullish divergence.',
+    notes: 'Вход на основе сильной поддержки и бычьей дивергенции.',
     chartImageId: 'chart-4',
   },
   {
@@ -68,7 +68,7 @@ export const mockTrades: Trade[] = [
     exitDate: '2024-05-24T15:30:00Z',
     status: 'Closed',
     pnl: 95,
-    notes: 'Quick scalp during afternoon consolidation.',
+    notes: 'Быстрый скальп во время дневной консолидации.',
     chartImageId: 'chart-5',
   },
 ];
