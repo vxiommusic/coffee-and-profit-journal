@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { NewNoteDialog } from '@/components/new-note-dialog';
 import { useNotes } from '@/context/notes-context';
@@ -21,22 +21,65 @@ import {
 import Image from 'next/image';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AnalyticsPage() {
-  const [isNewNoteOpen, setIsNewNoteOpen] = useState(false);
-  const { notes, addNote } = useNotes();
+  const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
+  const [noteToEdit, setNoteToEdit] = useState<Note | null>(null);
+  const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+  const { notes, addNote, updateNote, deleteNote } = useNotes();
+  const { toast } = useToast();
 
-  const handleAddNote = (note: Note) => {
-    addNote(note);
-    // Optionally add a toast notification here
+  const handleAddOrUpdateNote = (note: Note) => {
+    if (noteToEdit) {
+      updateNote(note);
+      toast({ title: 'Заметка обновлена' });
+    } else {
+      addNote(note);
+      toast({ title: 'Заметка создана' });
+    }
+    setNoteToEdit(null);
   };
+
+  const openNewNoteDialog = () => {
+    setNoteToEdit(null);
+    setIsNoteDialogOpen(true);
+  };
+
+  const openEditNoteDialog = (note: Note) => {
+    setNoteToEdit(note);
+    setIsNoteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (noteToDelete) {
+      deleteNote(noteToDelete.id);
+      toast({
+        title: 'Заметка удалена',
+        variant: 'destructive',
+      });
+      setNoteToDelete(null);
+    }
+  };
+
 
   return (
     <>
       <Card className="animate-in fade-in-0">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline">Аналитика и Заметки</CardTitle>
-          <Button onClick={() => setIsNewNoteOpen(true)}>
+          <Button onClick={openNewNoteDialog}>
             <PlusCircle className="mr-2 h-4 w-4" />
             Создать заметку
           </Button>
@@ -49,11 +92,23 @@ export default function AnalyticsPage() {
                   <AccordionTrigger>{note.title}</AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-4">
-                      <p className="text-sm text-muted-foreground">
-                        {format(parseISO(note.createdAt), 'd MMMM yyyy, HH:mm', {
-                          locale: ru,
-                        })}
-                      </p>
+                      <div className="flex justify-between items-start">
+                        <p className="text-sm text-muted-foreground">
+                          {format(parseISO(note.createdAt), 'd MMMM yyyy, HH:mm', {
+                            locale: ru,
+                          })}
+                        </p>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => openEditNoteDialog(note)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" onClick={() => setNoteToDelete(note)}>
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                        </div>
+                      </div>
                       <p className="whitespace-pre-wrap">{note.description}</p>
                       {note.screenshotUrl && (
                         <div className="relative mt-2 max-w-lg">
@@ -83,11 +138,30 @@ export default function AnalyticsPage() {
           )}
         </CardContent>
       </Card>
+      
       <NewNoteDialog
-        open={isNewNoteOpen}
-        onOpenChange={setIsNewNoteOpen}
-        onAddNote={handleAddNote}
+        open={isNoteDialogOpen}
+        onOpenChange={setIsNoteDialogOpen}
+        onAddOrUpdateNote={handleAddOrUpdateNote}
+        noteToEdit={noteToEdit}
       />
+
+      <AlertDialog open={!!noteToDelete} onOpenChange={(open) => !open && setNoteToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Это действие не может быть отменено. Это навсегда удалит вашу заметку.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setNoteToDelete(null)}>Отмена</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteConfirm}>
+                Удалить
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
     </>
   );
 }

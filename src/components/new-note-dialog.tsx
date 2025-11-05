@@ -25,7 +25,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Note } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { Upload } from 'lucide-react';
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, useEffect } from 'react';
 
 const noteSchema = z.object({
   title: z.string().min(1, 'Тема обязательна').max(100, 'Тема не должна превышать 100 символов'),
@@ -36,13 +36,15 @@ const noteSchema = z.object({
 type NewNoteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddNote: (note: Note) => void;
+  onAddOrUpdateNote: (note: Note) => void;
+  noteToEdit?: Note | null;
 };
 
 export function NewNoteDialog({
   open,
   onOpenChange,
-  onAddNote,
+  onAddOrUpdateNote,
+  noteToEdit,
 }: NewNoteDialogProps) {
   const form = useForm<z.infer<typeof noteSchema>>({
     resolver: zodResolver(noteSchema),
@@ -52,6 +54,22 @@ export function NewNoteDialog({
       screenshotUrl: '',
     },
   });
+
+  useEffect(() => {
+    if (noteToEdit && open) {
+      form.reset({
+        title: noteToEdit.title,
+        description: noteToEdit.description,
+        screenshotUrl: noteToEdit.screenshotUrl || '',
+      });
+    } else if (!open) {
+      form.reset({
+        title: '',
+        description: '',
+        screenshotUrl: '',
+      });
+    }
+  }, [noteToEdit, open, form]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -67,25 +85,31 @@ export function NewNoteDialog({
   };
 
   function onSubmit(values: z.infer<typeof noteSchema>) {
-    const newNote: Note = {
-      id: uuidv4(),
+    const noteData: Note = {
+      id: noteToEdit ? noteToEdit.id : uuidv4(),
       title: values.title,
       description: values.description,
       screenshotUrl: values.screenshotUrl || null,
-      createdAt: new Date().toISOString(),
+      createdAt: noteToEdit ? noteToEdit.createdAt : new Date().toISOString(),
     };
-    onAddNote(newNote);
+    onAddOrUpdateNote(noteData);
     onOpenChange(false);
-    form.reset();
   }
+  
+  const handleOpenChange = (isOpen: boolean) => {
+    onOpenChange(isOpen);
+    if (!isOpen) {
+      form.reset();
+    }
+  };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Создать новую заметку</DialogTitle>
+          <DialogTitle>{noteToEdit ? 'Редактировать заметку' : 'Создать новую заметку'}</DialogTitle>
           <DialogDescription>
-            Запишите свои мысли, наблюдения или анализ рынка.
+            {noteToEdit ? 'Отредактируйте детали вашей заметки.' : 'Запишите свои мысли, наблюдения или анализ рынка.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -155,8 +179,8 @@ export function NewNoteDialog({
               )}
             />
             <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Отмена</Button>
-              <Button type="submit">Сохранить заметку</Button>
+              <Button type="button" variant="ghost" onClick={() => handleOpenChange(false)}>Отмена</Button>
+              <Button type="submit">{noteToEdit ? 'Сохранить изменения' : 'Сохранить заметку'}</Button>
             </DialogFooter>
           </form>
         </Form>
