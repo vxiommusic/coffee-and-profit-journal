@@ -15,7 +15,7 @@ import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Filter, Trash2, Upload } from 'lucide-react';
+import { Filter, Trash2, Upload, PlusCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import {
   AlertDialog,
@@ -29,6 +29,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { NewTradeDialog } from '@/components/new-trade-dialog';
+import Image from 'next/image';
 
 // Компонент для форматирования даты на стороне клиента, чтобы избежать ошибок гидратации
 function ClientFormattedDate({ dateString }: { dateString: string | null }) {
@@ -50,10 +52,19 @@ export default function TradesPage() {
   const [tradeToDelete, setTradeToDelete] = useState<Trade | null>(null);
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
+  const [isNewTradeOpen, setIsNewTradeOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const handleAddTrade = (trade: Trade) => {
+    setTrades((prevTrades) => [trade, ...prevTrades]);
+    toast({
+      title: 'Сделка добавлена',
+      description: `Сделка для ${trade.instrument} была успешно добавлена.`,
+    });
+  };
 
   const handleDelete = () => {
     if (tradeToDelete) {
@@ -80,6 +91,10 @@ export default function TradesPage() {
               <Upload className="mr-2 h-4 w-4" />
               Импорт
             </Button>
+            <Button onClick={() => setIsNewTradeOpen(true)}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Новая сделка
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -87,6 +102,7 @@ export default function TradesPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Инструмент</TableHead>
+                <TableHead>График</TableHead>
                 <TableHead>Тип</TableHead>
                 <TableHead>Цена входа</TableHead>
                 <TableHead>Цена выхода</TableHead>
@@ -101,6 +117,17 @@ export default function TradesPage() {
                 <TableRow key={trade.id}>
                   <TableCell className="font-medium">
                     {trade.instrument}
+                  </TableCell>
+                  <TableCell>
+                    {trade.chartImageUrl && (
+                       <Image
+                        src={trade.chartImageUrl}
+                        alt={`График для ${trade.instrument}`}
+                        width={100}
+                        height={60}
+                        className="rounded-md object-cover"
+                      />
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -140,14 +167,7 @@ export default function TradesPage() {
                       : '-'}
                   </TableCell>
                   <TableCell className="text-right">
-                    <AlertDialog
-                      open={tradeToDelete?.id === trade.id}
-                      onOpenChange={(open) => {
-                        if (!open) {
-                          setTradeToDelete(null);
-                        }
-                      }}
-                    >
+                    <AlertDialog open={tradeToDelete?.id === trade.id} onOpenChange={(open) => !open && setTradeToDelete(null)}>
                       <AlertDialogTrigger asChild>
                         <Button
                           variant="ghost"
@@ -179,6 +199,11 @@ export default function TradesPage() {
           </Table>
         </CardContent>
       </Card>
+      <NewTradeDialog 
+        open={isNewTradeOpen} 
+        onOpenChange={setIsNewTradeOpen} 
+        onAddTrade={handleAddTrade}
+      />
     </>
   );
 }

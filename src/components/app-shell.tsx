@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -26,6 +26,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { NewTradeDialog } from './new-trade-dialog';
+import type { Trade } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 
 const menuItems = [
   { href: '/ai-insights', label: 'AI Аналитика', icon: Bot, description: "Находите закономерности с помощью ИИ." },
@@ -37,11 +40,22 @@ const menuItems = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { toast } = useToast();
   
   const sortedMenuItems = [...menuItems].sort((a, b) => b.href.length - a.href.length);
   const currentPage = sortedMenuItems.find(item => pathname.startsWith(item.href)) || menuItems.find(i => i.href === '/');
 
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
+  const [isNewTradeOpen, setIsNewTradeOpen] = useState(false);
+
+  const handleAddTrade = (trade: Trade) => {
+    // В реальном приложении здесь будет вызов API для сохранения
+    console.log('Новая сделка добавлена:', trade);
+    toast({
+      title: 'Сделка добавлена',
+      description: `Сделка для ${trade.instrument} была успешно добавлена.`,
+    });
+  };
 
   return (
     <SidebarProvider>
@@ -96,12 +110,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <p className="text-muted-foreground text-sm hidden md:block">{currentPage?.description}</p>
                 </div>
             </div>
-            <Button>Новая сделка</Button>
+            <Button onClick={() => setIsNewTradeOpen(true)}>Новая сделка</Button>
         </header>
         <div className="p-4 sm:p-6 lg:p-8">
           {children}
         </div>
       </SidebarInset>
+      <NewTradeDialog 
+        open={isNewTradeOpen} 
+        onOpenChange={setIsNewTradeOpen} 
+        onAddTrade={handleAddTrade}
+      />
     </SidebarProvider>
   );
 }

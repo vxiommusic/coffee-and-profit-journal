@@ -9,5 +9,5 @@ export type Trade = {
   exitDate: string | null;
   pnl: number | null;
   notes?: string;
-  chartImageId: string;
+  chartImageUrl: string | null;
 };

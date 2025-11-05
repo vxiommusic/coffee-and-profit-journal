@@ -1,4 +1,9 @@
 import type { Trade } from './types';
+import { PlaceHolderImages } from './placeholder-images';
+
+function getImageUrl(id: string) {
+  return PlaceHolderImages.find(p => p.id === id)?.imageUrl ?? null;
+}
 
 export const mockTrades: Trade[] = [
   {
@@ -12,7 +17,7 @@ export const mockTrades: Trade[] = [
     exitDate: '2024-05-20T14:00:00Z',
     pnl: 502.5,
     notes: 'Поймал утренний всплеск на новостях об ИИ. Хорошее исполнение.',
-    chartImageId: 'chart-1',
+    chartImageUrl: getImageUrl('chart-1'),
   },
   {
     id: '2',
@@ -25,7 +30,7 @@ export const mockTrades: Trade[] = [
     exitDate: '2024-05-21T18:45:00Z',
     pnl: 650,
     notes: 'Продажа от уровня сопротивления 69k. Сработало как и планировалось.',
-    chartImageId: 'chart-2',
+    chartImageUrl: getImageUrl('chart-2'),
   },
   {
     id: '3',
@@ -38,7 +43,7 @@ export const mockTrades: Trade[] = [
     exitDate: '2024-05-22T10:15:00Z',
     pnl: -100,
     notes: 'Вошел слишком рано, выбило по стопу на фитиле.',
-    chartImageId: 'chart-3',
+    chartImageUrl: getImageUrl('chart-3'),
   },
   {
     id: '4',
@@ -51,7 +56,7 @@ export const mockTrades: Trade[] = [
     exitDate: null,
     pnl: null,
     notes: 'Вход на основе сильной поддержки и бычьей дивергенции.',
-    chartImageId: 'chart-4',
+    chartImageUrl: getImageUrl('chart-4'),
   },
   {
     id: '5',
@@ -64,6 +69,6 @@ export const mockTrades: Trade[] = [
     exitDate: '2024-05-24T15:30:00Z',
     pnl: 95,
     notes: 'Быстрый скальп во время дневной консолидации.',
-    chartImageId: 'chart-5',
+    chartImageUrl: getImageUrl('chart-5'),
   },
 ];
