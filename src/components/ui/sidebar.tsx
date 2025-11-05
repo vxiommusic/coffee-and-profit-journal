@@ -182,7 +182,6 @@ const Sidebar = React.forwardRef<
       setIsMounted(true);
     }, []);
 
-
     if (collapsible === "none") {
       return (
         <div
@@ -198,31 +197,6 @@ const Sidebar = React.forwardRef<
       )
     }
 
-    if (!isMounted) {
-       return (
-        <div
-          ref={ref}
-          className="group peer hidden md:block text-sidebar-foreground"
-          data-state={state}
-          data-collapsible={state === "collapsed" ? collapsible : ""}
-          data-variant={variant}
-          data-side={side}
-        >
-          {/* This is what handles the sidebar gap on desktop */}
-          <div
-            className={cn(
-              "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
-              "group-data-[collapsible=offcanvas]:w-0",
-              "group-data-[side=right]:rotate-180",
-              variant === "floating" || variant === "inset"
-                ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-                : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
-            )}
-          />
-        </div>
-      );
-    }
-    
     if (isMobile) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
