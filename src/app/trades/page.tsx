@@ -133,15 +133,38 @@ export default function TradesPage() {
                       : '-'}
                   </TableCell>
                   <TableCell className="text-right">
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setTradeToDelete(trade)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </AlertDialogTrigger>
+                    <AlertDialog
+                      open={tradeToDelete?.id === trade.id}
+                      onOpenChange={(open) => {
+                        if (!open) {
+                          setTradeToDelete(null);
+                        }
+                      }}
+                    >
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setTradeToDelete(trade)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Это действие не может быть отменено. Это навсегда удалит вашу сделку.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Отмена</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDelete}>
+                            Удалить
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}
@@ -149,23 +172,6 @@ export default function TradesPage() {
           </Table>
         </CardContent>
       </Card>
-      <AlertDialog
-        open={!!tradeToDelete}
-        onOpenChange={(open) => !open && setTradeToDelete(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Это действие не может быть отменено. Это навсегда удалит вашу сделку.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Удалить</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
