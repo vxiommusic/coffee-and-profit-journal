@@ -102,11 +102,27 @@ export default function AnalyticsPage() {
                           <Button variant="ghost" size="icon" onClick={() => openEditNoteDialog(note)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" onClick={() => setNoteToDelete(note)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </AlertDialogTrigger>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" onClick={() => setNoteToDelete(note)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Это действие не может быть отменено. Это навсегда удалит вашу заметку.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel onClick={() => setNoteToDelete(null)}>Отмена</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDeleteConfirm}>
+                                    Удалить
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                       <p className="whitespace-pre-wrap">{note.description}</p>
@@ -145,23 +161,6 @@ export default function AnalyticsPage() {
         onAddOrUpdateNote={handleAddOrUpdateNote}
         noteToEdit={noteToEdit}
       />
-
-      <AlertDialog open={!!noteToDelete} onOpenChange={(open) => !open && setNoteToDelete(null)}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Это действие не может быть отменено. Это навсегда удалит вашу заметку.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setNoteToDelete(null)}>Отмена</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteConfirm}>
-                Удалить
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
     </>
   );
 }
