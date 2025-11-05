@@ -94,13 +94,13 @@ export default function DashboardPage() {
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in-0">
       <Card className="lg:col-span-4">
         <CardHeader>
-          <CardTitle className="font-headline">Эффективность портфеля</CardTitle>
+          <CardTitle className="font-headline">Эффективность торговли</CardTitle>
           <CardDescription>
             Ваши торговые показатели за последние 30 дней.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <PortfolioChart />
+          <PortfolioChart trades={trades} />
         </CardContent>
       </Card>
 
