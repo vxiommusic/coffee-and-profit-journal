@@ -12,3 +12,11 @@ export type Trade = {
   chartImageUrl: string | null;
   commission?: number | null;
 };
+
+export type Note = {
+  id: string;
+  title: string;
+  description: string;
+  screenshotUrl: string | null;
+  createdAt: string;
+};
