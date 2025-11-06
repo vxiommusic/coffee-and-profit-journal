@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AppShell } from '@/components/app-shell';
-import { Toaster } from '@/components/ui/toaster';
 import { TradesProvider } from '@/context/trades-context';
 import { NotesProvider } from '@/context/notes-context';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { ToasterProvider } from '@/providers/toaster-provider';
 
 export const metadata: Metadata = {
   title: 'Coffee and Profit',
@@ -38,7 +38,7 @@ export default function RootLayout({
             </NotesProvider>
           </TradesProvider>
         </FirebaseClientProvider>
-        <Toaster />
+        <ToasterProvider />
       </body>
     </html>
   );
