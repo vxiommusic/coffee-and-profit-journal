@@ -13,26 +13,29 @@ interface TradesContextType {
 const TradesContext = createContext<TradesContextType | undefined>(undefined);
 
 export function TradesProvider({ children }: { children: ReactNode }) {
-  const [trades, setTrades] = useState<Trade[]>(() => {
-    if (typeof window === 'undefined') {
-      return mockTrades;
-    }
-    try {
-      const savedTrades = localStorage.getItem('trades');
-      return savedTrades ? JSON.parse(savedTrades) : mockTrades;
-    } catch (error) {
-      console.error('Error reading trades from localStorage', error);
-      return mockTrades;
-    }
-  });
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     try {
-      localStorage.setItem('trades', JSON.stringify(trades));
+      const savedTrades = localStorage.getItem('trades');
+      setTrades(savedTrades ? JSON.parse(savedTrades) : mockTrades);
     } catch (error) {
-      console.error('Error saving trades to localStorage', error);
+      console.error('Error reading trades from localStorage', error);
+      setTrades(mockTrades);
     }
-  }, [trades]);
+    setIsInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    if (isInitialized) {
+      try {
+        localStorage.setItem('trades', JSON.stringify(trades));
+      } catch (error) {
+        console.error('Error saving trades to localStorage', error);
+      }
+    }
+  }, [trades, isInitialized]);
 
   const addTrade = (trade: Trade) => {
     setTrades((prevTrades) => [trade, ...prevTrades]);

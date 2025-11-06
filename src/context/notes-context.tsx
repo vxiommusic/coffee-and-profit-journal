@@ -13,26 +13,30 @@ interface NotesContextType {
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
 export function NotesProvider({ children }: { children: ReactNode }) {
-  const [notes, setNotes] = useState<Note[]>(() => {
-    if (typeof window === 'undefined') {
-      return [];
-    }
-    try {
-      const savedNotes = localStorage.getItem('notes');
-      return savedNotes ? JSON.parse(savedNotes) : [];
-    } catch (error) {
-      console.error('Error reading notes from localStorage', error);
-      return [];
-    }
-  });
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     try {
-      localStorage.setItem('notes', JSON.stringify(notes));
+      const savedNotes = localStorage.getItem('notes');
+      if (savedNotes) {
+        setNotes(JSON.parse(savedNotes));
+      }
     } catch (error) {
-      console.error('Error saving notes to localStorage', error);
+      console.error('Error reading notes from localStorage', error);
     }
-  }, [notes]);
+    setIsInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    if (isInitialized) {
+      try {
+        localStorage.setItem('notes', JSON.stringify(notes));
+      } catch (error) {
+        console.error('Error saving notes to localStorage', error);
+      }
+    }
+  }, [notes, isInitialized]);
 
   const addNote = (note: Note) => {
     setNotes((prevNotes) => [note, ...prevNotes]);
