@@ -1,10 +1,10 @@
 'use client';
 import { FirebaseProvider } from './provider';
 import { initializeFirebase } from './index';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 // A temporary check to prevent app crash if Firebase config is missing.
-const isFirebaseConfigured =
+const isFirebaseConfiguredCheck =
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
   process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
@@ -14,7 +14,19 @@ export function FirebaseClientProvider({
   children: React.ReactNode;
 }) {
   const { firebaseApp, auth, firestore } = useMemo(() => initializeFirebase(), []);
+  const [isFirebaseConfigured, setIsFirebaseConfigured] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
+  useEffect(() => {
+    setIsClient(true);
+    setIsFirebaseConfigured(isFirebaseConfiguredCheck);
+  }, []);
+
+  if (!isClient) {
+    // Render nothing on the server to avoid hydration mismatch
+    return null;
+  }
+  
   if (!isFirebaseConfigured) {
     return (
         <div className="flex h-screen w-screen flex-col items-center justify-center bg-background text-foreground">
