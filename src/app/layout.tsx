@@ -4,6 +4,7 @@ import { AppShell } from '@/components/app-shell';
 import { Toaster } from '@/components/ui/toaster';
 import { TradesProvider } from '@/context/trades-context';
 import { NotesProvider } from '@/context/notes-context';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: 'Coffee and Profit',
@@ -30,11 +31,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <TradesProvider>
-          <NotesProvider>
-            <AppShell>{children}</AppShell>
-          </NotesProvider>
-        </TradesProvider>
+        <FirebaseClientProvider>
+          <TradesProvider>
+            <NotesProvider>
+              <AppShell>{children}</AppShell>
+            </NotesProvider>
+          </TradesProvider>
+        </FirebaseClientProvider>
         <Toaster />
       </body>
     </html>
