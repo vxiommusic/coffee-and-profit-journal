@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { Trade } from '@/lib/types';
 import { mockTrades } from '@/lib/data';
 
@@ -13,7 +13,26 @@ interface TradesContextType {
 const TradesContext = createContext<TradesContextType | undefined>(undefined);
 
 export function TradesProvider({ children }: { children: ReactNode }) {
-  const [trades, setTrades] = useState<Trade[]>(mockTrades);
+  const [trades, setTrades] = useState<Trade[]>(() => {
+    if (typeof window === 'undefined') {
+      return mockTrades;
+    }
+    try {
+      const savedTrades = localStorage.getItem('trades');
+      return savedTrades ? JSON.parse(savedTrades) : mockTrades;
+    } catch (error) {
+      console.error('Error reading trades from localStorage', error);
+      return mockTrades;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('trades', JSON.stringify(trades));
+    } catch (error) {
+      console.error('Error saving trades to localStorage', error);
+    }
+  }, [trades]);
 
   const addTrade = (trade: Trade) => {
     setTrades((prevTrades) => [trade, ...prevTrades]);

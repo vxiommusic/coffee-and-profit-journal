@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { Note } from '@/lib/types';
 
 interface NotesContextType {
@@ -13,7 +13,26 @@ interface NotesContextType {
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
 export function NotesProvider({ children }: { children: ReactNode }) {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes] = useState<Note[]>(() => {
+    if (typeof window === 'undefined') {
+      return [];
+    }
+    try {
+      const savedNotes = localStorage.getItem('notes');
+      return savedNotes ? JSON.parse(savedNotes) : [];
+    } catch (error) {
+      console.error('Error reading notes from localStorage', error);
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('notes', JSON.stringify(notes));
+    } catch (error) {
+      console.error('Error saving notes to localStorage', error);
+    }
+  }, [notes]);
 
   const addNote = (note: Note) => {
     setNotes((prevNotes) => [note, ...prevNotes]);
