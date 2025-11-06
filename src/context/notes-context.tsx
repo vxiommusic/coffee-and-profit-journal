@@ -16,6 +16,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Этот useEffect выполняется один раз на клиенте для загрузки данных
   useEffect(() => {
     try {
       const savedNotes = localStorage.getItem('notes');
@@ -24,11 +25,14 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Error reading notes from localStorage', error);
+    } finally {
+      setIsInitialized(true);
     }
-    setIsInitialized(true);
-  }, []);
+  }, []); // Пустой массив зависимостей гарантирует, что это выполнится только один раз
 
+  // Этот useEffect сохраняет данные в localStorage при их изменении
   useEffect(() => {
+    // Мы сохраняем данные только после того, как они были инициализированы
     if (isInitialized) {
       try {
         localStorage.setItem('notes', JSON.stringify(notes));
@@ -36,7 +40,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         console.error('Error saving notes to localStorage', error);
       }
     }
-  }, [notes, isInitialized]);
+  }, [notes, isInitialized]); // Зависимость от 'notes' и 'isInitialized'
 
   const addNote = (note: Note) => {
     setNotes((prevNotes) => [note, ...prevNotes]);

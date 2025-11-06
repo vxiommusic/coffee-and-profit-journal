@@ -16,18 +16,28 @@ export function TradesProvider({ children }: { children: ReactNode }) {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Этот useEffect выполняется один раз на клиенте для загрузки данных
   useEffect(() => {
     try {
       const savedTrades = localStorage.getItem('trades');
-      setTrades(savedTrades ? JSON.parse(savedTrades) : mockTrades);
+      if (savedTrades) {
+        setTrades(JSON.parse(savedTrades));
+      } else {
+        // Если в localStorage ничего нет, загружаем данные по умолчанию
+        setTrades(mockTrades);
+      }
     } catch (error) {
       console.error('Error reading trades from localStorage', error);
+      // В случае ошибки загружаем данные по умолчанию
       setTrades(mockTrades);
+    } finally {
+      setIsInitialized(true);
     }
-    setIsInitialized(true);
-  }, []);
+  }, []); // Пустой массив зависимостей гарантирует, что это выполнится только один раз
 
+  // Этот useEffect сохраняет данные в localStorage при их изменении
   useEffect(() => {
+    // Мы сохраняем данные только после того, как они были инициализированы
     if (isInitialized) {
       try {
         localStorage.setItem('trades', JSON.stringify(trades));
@@ -35,7 +45,7 @@ export function TradesProvider({ children }: { children: ReactNode }) {
         console.error('Error saving trades to localStorage', error);
       }
     }
-  }, [trades, isInitialized]);
+  }, [trades, isInitialized]); // Зависимость от 'trades' и 'isInitialized'
 
   const addTrade = (trade: Trade) => {
     setTrades((prevTrades) => [trade, ...prevTrades]);
