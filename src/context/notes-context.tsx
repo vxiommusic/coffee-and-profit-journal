@@ -12,33 +12,36 @@ interface NotesContextType {
 
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
-// Функция для ленивой инициализации состояния из localStorage
-const getInitialNotes = (): Note[] => {
-  // Этот код выполнится только на клиенте
-  if (typeof window === 'undefined') {
-    return [];
-  }
-  try {
-    const savedNotes = localStorage.getItem('notes');
-    return savedNotes ? JSON.parse(savedNotes) : [];
-  } catch (error) {
-    console.error('Error reading notes from localStorage', error);
-    return [];
-  }
-};
-
-
 export function NotesProvider({ children }: { children: ReactNode }) {
-  const [notes, setNotes] = useState<Note[]>(getInitialNotes);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Этот useEffect сохраняет данные в localStorage при их изменении
+  // Этот useEffect выполняется один раз на клиенте для загрузки начальных данных
   useEffect(() => {
     try {
-      localStorage.setItem('notes', JSON.stringify(notes));
+      const savedNotes = localStorage.getItem('notes');
+      // Загружаем данные, только если они существуют. В противном случае оставляем пустой массив.
+      if (savedNotes) {
+        setNotes(JSON.parse(savedNotes));
+      }
     } catch (error) {
-      console.error('Error saving notes to localStorage', error);
+      console.error('Error reading notes from localStorage', error);
+      setNotes([]);
     }
-  }, [notes]);
+    setIsInitialized(true);
+  }, []); // Пустой массив зависимостей гарантирует, что это выполнится только один раз
+
+  // Этот useEffect сохраняет данные в localStorage при их изменении,
+  // но только после того, как начальные данные были загружены
+  useEffect(() => {
+    if (isInitialized) {
+      try {
+        localStorage.setItem('notes', JSON.stringify(notes));
+      } catch (error) {
+        console.error('Error saving notes to localStorage', error);
+      }
+    }
+  }, [notes, isInitialized]);
 
   const addNote = (note: Note) => {
     setNotes((prevNotes) => [note, ...prevNotes]);

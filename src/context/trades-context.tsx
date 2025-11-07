@@ -12,33 +12,38 @@ interface TradesContextType {
 
 const TradesContext = createContext<TradesContextType | undefined>(undefined);
 
-// Функция для ленивой инициализации состояния из localStorage
-const getInitialTrades = (): Trade[] => {
-  // Этот код выполнится только на клиенте
-  if (typeof window === 'undefined') {
-    return mockTrades;
-  }
-  try {
-    const savedTrades = localStorage.getItem('trades');
-    return savedTrades ? JSON.parse(savedTrades) : mockTrades;
-  } catch (error) {
-    console.error('Error reading trades from localStorage', error);
-    return mockTrades;
-  }
-};
-
-
 export function TradesProvider({ children }: { children: ReactNode }) {
-  const [trades, setTrades] = useState<Trade[]>(getInitialTrades);
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Этот useEffect сохраняет данные в localStorage при их изменении
+  // Этот useEffect выполняется один раз на клиенте для загрузки начальных данных
   useEffect(() => {
     try {
-      localStorage.setItem('trades', JSON.stringify(trades));
+      const savedTrades = localStorage.getItem('trades');
+      if (savedTrades) {
+        setTrades(JSON.parse(savedTrades));
+      } else {
+        // Если в localStorage ничего нет, используем mockTrades
+        setTrades(mockTrades);
+      }
     } catch (error) {
-      console.error('Error saving trades to localStorage', error);
+      console.error('Error reading trades from localStorage, using mock trades.', error);
+      setTrades(mockTrades);
     }
-  }, [trades]);
+    setIsInitialized(true);
+  }, []); // Пустой массив зависимостей гарантирует, что это выполнится только один раз
+
+  // Этот useEffect сохраняет данные в localStorage при их изменении,
+  // но только после того, как начальные данные были загружены
+  useEffect(() => {
+    if (isInitialized) {
+      try {
+        localStorage.setItem('trades', JSON.stringify(trades));
+      } catch (error) {
+        console.error('Error saving trades to localStorage', error);
+      }
+    }
+  }, [trades, isInitialized]);
 
   const addTrade = (trade: Trade) => {
     setTrades((prevTrades) => [trade, ...prevTrades]);
