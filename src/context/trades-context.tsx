@@ -12,45 +12,61 @@ interface TradesContextType {
 
 const TradesContext = createContext<TradesContextType | undefined>(undefined);
 
+// Функция для ленивой инициализации состояния из localStorage
+const getInitialTrades = (): Trade[] => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+  try {
+    const savedTrades = localStorage.getItem('trades');
+    // Если в localStorage что-то есть, используем это
+    if (savedTrades) {
+      return JSON.parse(savedTrades);
+    }
+    // Если localStorage пуст, используем mockTrades
+    localStorage.setItem('trades', JSON.stringify(mockTrades));
+    return mockTrades;
+  } catch (error) {
+    console.error('Error reading or setting trades in localStorage, using mock trades.', error);
+    return mockTrades;
+  }
+};
+
+
 export function TradesProvider({ children }: { children: ReactNode }) {
   const [trades, setTrades] = useState<Trade[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Этот useEffect выполняется один раз на клиенте для загрузки начальных данных
+  // Этот хук выполнится один раз на клиенте для безопасной загрузки данных
   useEffect(() => {
-    try {
-      const savedTrades = localStorage.getItem('trades');
-      if (savedTrades) {
-        setTrades(JSON.parse(savedTrades));
-      } else {
-        // Если в localStorage ничего нет, используем mockTrades
-        setTrades(mockTrades);
-      }
-    } catch (error) {
-      console.error('Error reading trades from localStorage, using mock trades.', error);
-      setTrades(mockTrades);
-    }
-    setIsInitialized(true);
-  }, []); // Пустой массив зависимостей гарантирует, что это выполнится только один раз
+    setTrades(getInitialTrades());
+  }, []);
 
-  // Этот useEffect сохраняет данные в localStorage при их изменении,
-  // но только после того, как начальные данные были загружены
+  // Этот хук сохраняет данные при любом их изменении
   useEffect(() => {
-    if (isInitialized) {
+    // Не сохраняем начальное пустое состояние, чтобы не затереть localStorage
+    if (trades.length > 0) {
       try {
         localStorage.setItem('trades', JSON.stringify(trades));
       } catch (error) {
         console.error('Error saving trades to localStorage', error);
       }
     }
-  }, [trades, isInitialized]);
+  }, [trades]);
+
 
   const addTrade = (trade: Trade) => {
     setTrades((prevTrades) => [trade, ...prevTrades]);
   };
 
   const deleteTrade = (tradeId: string) => {
-    setTrades((prevTrades) => prevTrades.filter((trade) => trade.id !== tradeId));
+    const newTrades = trades.filter((trade) => trade.id !== tradeId);
+    setTrades(newTrades);
+    // Принудительно сохраняем в localStorage, даже если массив стал пустым
+    try {
+        localStorage.setItem('trades', JSON.stringify(newTrades));
+    } catch (error) {
+        console.error('Error saving trades to localStorage after deletion', error);
+    }
   };
 
   return (
