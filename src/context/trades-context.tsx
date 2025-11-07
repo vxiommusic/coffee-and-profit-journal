@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -12,14 +13,12 @@ interface TradesContextType {
 
 const TradesContext = createContext<TradesContextType | undefined>(undefined);
 
-// Функция для ленивой инициализации состояния из localStorage
 const getInitialTrades = (): Trade[] => {
   if (typeof window === 'undefined') {
     return [];
   }
   try {
     const savedTrades = localStorage.getItem('trades');
-    // Если в localStorage что-то есть, используем это
     if (savedTrades) {
       return JSON.parse(savedTrades);
     }
@@ -36,16 +35,15 @@ const getInitialTrades = (): Trade[] => {
 export function TradesProvider({ children }: { children: ReactNode }) {
   const [trades, setTrades] = useState<Trade[]>([]);
 
-  // Этот хук выполнится один раз на клиенте для безопасной загрузки данных
   useEffect(() => {
     setTrades(getInitialTrades());
   }, []);
 
-  // Этот хук сохраняет данные при любом их изменении
   useEffect(() => {
-    // Не сохраняем начальное пустое состояние, чтобы не затереть localStorage
-    if (trades.length > 0) {
-      try {
+    // Этот useEffect сработает только после инициализации и при реальных изменениях
+    // Предотвращаем затирание localStorage пустым массивом при первом рендере
+    if (trades.length > 0 || localStorage.getItem('trades')) {
+       try {
         localStorage.setItem('trades', JSON.stringify(trades));
       } catch (error) {
         console.error('Error saving trades to localStorage', error);
@@ -59,14 +57,7 @@ export function TradesProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteTrade = (tradeId: string) => {
-    const newTrades = trades.filter((trade) => trade.id !== tradeId);
-    setTrades(newTrades);
-    // Принудительно сохраняем в localStorage, даже если массив стал пустым
-    try {
-        localStorage.setItem('trades', JSON.stringify(newTrades));
-    } catch (error) {
-        console.error('Error saving trades to localStorage after deletion', error);
-    }
+    setTrades((prevTrades) => prevTrades.filter((trade) => trade.id !== tradeId));
   };
 
   return (

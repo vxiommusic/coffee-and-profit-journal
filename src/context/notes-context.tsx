@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -12,39 +13,31 @@ interface NotesContextType {
 
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
-// Функция для ленивой инициализации состояния из localStorage
 const getInitialNotes = (): Note[] => {
     if (typeof window === 'undefined') {
         return [];
     }
     try {
-        const savedNotes = localStorage.getItem('notes');
-        return savedNotes ? JSON.parse(savedNotes) : [];
+        const item = window.localStorage.getItem('notes');
+        return item ? JSON.parse(item) : [];
     } catch (error) {
-        console.error('Error reading notes from localStorage', error);
+        console.warn(`Error reading localStorage key “notes”:`, error);
         return [];
     }
 };
 
 export function NotesProvider({ children }: { children: ReactNode }) {
   const [notes, setNotes] = useState<Note[]>([]);
-  
-  // Этот хук выполнится один раз на клиенте для безопасной загрузки данных
+
   useEffect(() => {
     setNotes(getInitialNotes());
   }, []);
 
-  // Этот хук сохраняет данные при любом их изменении
   useEffect(() => {
-    // Проверяем, что это не начальное состояние, чтобы избежать затирания данных
-    // при серверном рендеринге или до гидратации.
-    // Мы можем сохранить пустой массив, если пользователь удалил все заметки.
-    if (typeof window !== 'undefined') {
-        try {
-            localStorage.setItem('notes', JSON.stringify(notes));
-        } catch (error) {
-            console.error('Error saving notes to localStorage', error);
-        }
+    try {
+        window.localStorage.setItem('notes', JSON.stringify(notes));
+    } catch (error) {
+        console.warn(`Error setting localStorage key “notes”:`, error);
     }
   }, [notes]);
 
@@ -59,14 +52,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteNote = (noteId: string) => {
-    const newNotes = notes.filter((note) => note.id !== noteId);
-    setNotes(newNotes);
-    // Принудительно сохраняем, даже если массив стал пустым
-     try {
-        localStorage.setItem('notes', JSON.stringify(newNotes));
-    } catch (error) {
-        console.error('Error saving notes to localStorage after deletion', error);
-    }
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
   };
 
   return (
